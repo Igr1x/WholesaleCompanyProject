@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.varnavskii.wholesalecompany.controller.GoodsController">
+   <children>
+      <TextField editable="false" layoutX="14.0" layoutY="14.0" text="Table: goods" />
+      <TableView fx:id="tableGoods" layoutX="14.0" layoutY="55.0" prefHeight="328.0" prefWidth="227.0">
+        <columns>
+          <TableColumn fx:id="columnId" prefWidth="42.0" text="id" />
+          <TableColumn fx:id="columnName" prefWidth="108.0" text="name" />
+            <TableColumn fx:id="columnPriority" prefWidth="75.0" text="priority" />
+        </columns>
+      </TableView>
+      <Button fx:id="menuButton" layoutX="507.0" layoutY="361.0" mnemonicParsing="false" onAction="#goMenu" prefHeight="25.0" prefWidth="69.0" text="Menu" />
+      <TextField fx:id="idTextField" layoutX="335.0" layoutY="55.0" promptText="Id" />
+      <TextField fx:id="nameTextField" layoutX="335.0" layoutY="98.0" promptText="Name" />
+      <TextField fx:id="priorityTextField" layoutX="335.0" layoutY="143.0" promptText="Priority" />
+      <Button fx:id="addButton" layoutX="506.0" layoutY="55.0" mnemonicParsing="false" onAction="#addGood" text="Добавить" />
+      <Button fx:id="updateButton" layoutX="506.0" layoutY="98.0" mnemonicParsing="false" onAction="#updateGood" text="Изменить" />
+      <Button fx:id="deleteButton" layoutX="506.0" layoutY="143.0" mnemonicParsing="false" onAction="#deleteGood" prefHeight="25.0" prefWidth="69.0" text="Удалить" />
+      <Button fx:id="reportButton" layoutX="401.0" layoutY="361.0" mnemonicParsing="false" onAction="#downloadReport" text="Скачать отчёт" />
+   </children>
+</AnchorPane>
