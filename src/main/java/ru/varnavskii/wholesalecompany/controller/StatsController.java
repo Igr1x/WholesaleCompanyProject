@@ -3,6 +3,7 @@ package ru.varnavskii.wholesalecompany.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -21,13 +22,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import ru.varnavskii.wholesalecompany.dao.GoodsDao;
 import ru.varnavskii.wholesalecompany.dao.SalesDao;
 import ru.varnavskii.wholesalecompany.dao.TopGoodsDao;
-import ru.varnavskii.wholesalecompany.entity.GoodsEntity;
-import ru.varnavskii.wholesalecompany.entity.SalesEntity;
 import ru.varnavskii.wholesalecompany.entity.TopGoodsEntity;
-import ru.varnavskii.wholesalecompany.util.ReportExcel;
+import ru.varnavskii.wholesalecompany.util.ExceptionHandler;
 
 public class StatsController {
 
@@ -80,32 +78,43 @@ public class StatsController {
         Integer id = Integer.parseInt(goodIdTextField.getText());
         Timestamp start = Timestamp.valueOf(startDateFormated);
         Timestamp end = Timestamp.valueOf(endDateFormated);
-        List<Integer> result = SalesDao.getInstance().selectDemain(id, start, end);
-        int resultDemain = 0;
-        for (int i = 0; i < result.size(); i++) {
-            if (resultDemain > result.get(i)) {
-                resultDemain -= result.get(i);
-            } else {
-                resultDemain += result.get(i);
+        try {
+            List<Integer> result = SalesDao.getInstance().selectDemain(id, start, end);
+            int resultDemain = 0;
+            for (int i = 0; i < result.size(); i++) {
+                if (resultDemain > result.get(i)) {
+                    resultDemain -= result.get(i);
+                } else {
+                    resultDemain += result.get(i);
+                }
             }
-        }
-        if (resultDemain < 0) {
-            resultTextField.setText("Спрос упал на: " + resultDemain / -1);
-        } else {
-            resultTextField.setText("Спрос увеличился на: " + resultDemain);
+            if (resultDemain < 0) {
+                resultTextField.setText("Спрос упал на: " + resultDemain / -1);
+            } else {
+                resultTextField.setText("Спрос увеличился на: " + resultDemain);
+            }
+        } catch (Exception e) {
+            String errorMessage = ExceptionHandler.getMessage(e);
+            System.out.println(errorMessage);
         }
     }
 
     @FXML
     void checkDemandChart(ActionEvent event) {
+        lineChart.getData().clear();
         lineChart.getXAxis().setAutoRanging(true);
         Integer id = Integer.parseInt(goodIdChartTextField.getText());
-        Map<String, Integer> map = SalesDao.getInstance().selectDemain(id);
-        XYChart.Series series = new XYChart.Series();
-        for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            series.getData().add(new XYChart.Data(entry.getKey(), entry.getValue()));
+        try {
+            Map<String, Integer> map = SalesDao.getInstance().selectDemain(id);
+            XYChart.Series series = new XYChart.Series();
+            for (Map.Entry<String, Integer> entry : map.entrySet()) {
+                series.getData().add(new XYChart.Data(entry.getKey(), entry.getValue()));
+            }
+            lineChart.getData().add(series);
+        } catch (Exception e) {
+            String errorMessage = ExceptionHandler.getMessage(e);
+            System.out.println(errorMessage);
         }
-        lineChart.getData().add(series);
     }
 
     @FXML
@@ -128,7 +137,10 @@ public class StatsController {
     void initialize() {
         good_name.setCellValueFactory(new PropertyValueFactory<TopGoodsEntity, String>("name"));
         good_count.setCellValueFactory(new PropertyValueFactory<TopGoodsEntity, Integer>("goodCount"));
-        ObservableList<TopGoodsEntity> list = TopGoodsDao.getInstance().select();
-        topGoods.setItems(list);
+        try {
+            ObservableList<TopGoodsEntity> list = TopGoodsDao.getInstance().select();
+            topGoods.setItems(list);
+        } catch (Exception e) {
+        }
     }
 }

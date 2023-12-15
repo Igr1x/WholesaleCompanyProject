@@ -3,12 +3,13 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.varnavskii.wholesalecompany.controller.SalesController">
     <children>
-        <TextField editable="false" layoutX="14.0" layoutY="14.0" text="Table: sales" />
+        <TextField editable="false" layoutX="14.0" layoutY="14.0" text="Таблица: заявки" />
         <TableView fx:id="tableSales" layoutX="14.0" layoutY="55.0" prefHeight="328.0" prefWidth="293.0">
             <columns>
                 <TableColumn fx:id="columnId" prefWidth="42.0" text="id" />
@@ -17,7 +18,7 @@
             <TableColumn fx:id="columnGoodId" prefWidth="65.0" text="good_id" />
             </columns>
         </TableView>
-        <Button fx:id="menuButton" layoutX="507.0" layoutY="361.0" mnemonicParsing="false" onAction="#goMenu" prefHeight="25.0" prefWidth="69.0" text="Menu" />
+        <Button fx:id="menuButton" layoutX="507.0" layoutY="361.0" mnemonicParsing="false" onAction="#goMenu" prefHeight="25.0" prefWidth="69.0" text="Меню" />
         <TextField fx:id="idTextField" layoutX="335.0" layoutY="55.0" promptText="Id" />
         <TextField fx:id="goodCountTextField" layoutX="335.0" layoutY="98.0" promptText="Good_count" />
         <Button fx:id="addButton" layoutX="506.0" layoutY="55.0" mnemonicParsing="false" onAction="#addSale" text="Добавить" />
@@ -25,5 +26,6 @@
         <Button fx:id="deleteButton" layoutX="506.0" layoutY="143.0" mnemonicParsing="false" onAction="#deleteSale" prefHeight="25.0" prefWidth="69.0" text="Удалить" />
       <TextField fx:id="goodIdTextField" layoutX="335.0" layoutY="143.0" promptText="Good id" />
       <Button fx:id="reportButon" layoutX="399.0" layoutY="361.0" mnemonicParsing="false" onAction="#downloadReport" text="Скачать отчёт" />
+      <TextArea fx:id="infoText" editable="false" layoutX="319.0" layoutY="178.0" prefHeight="128.0" prefWidth="253.0" />
     </children>
 </AnchorPane>

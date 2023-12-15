@@ -15,10 +15,15 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.varnavskii.wholesalecompany.dao.UsersDao;
 import ru.varnavskii.wholesalecompany.entity.UsersEntity;
+import ru.varnavskii.wholesalecompany.util.ExceptionHandler;
 
 public class RegistrationController {
+
+    private final static Logger log = LoggerFactory.getLogger(RegistrationController.class);
 
     @FXML
     private ResourceBundle resources;
@@ -43,19 +48,28 @@ public class RegistrationController {
 
     @FXML
     void addUser(ActionEvent event) {
-        String loginStr = login.getText().trim();
-        String passwordStr = password.getText().trim();
-        if (loginStr.equals("") || passwordStr.equals("")) {
-            info.setText("Введите корректные данные для регистрации");
-        } else {
-            String hashPassword = DigestUtils.md5Hex(passwordStr);
-            if (UsersDao.getInstance().selectLogin(loginStr)) {
-                info.setText("Пользователь с таким логином уже существует");
+        try {
+            String loginStr = login.getText().trim();
+            String passwordStr = password.getText().trim();
+            if (loginStr.equals("") || passwordStr.equals("")) {
+                info.setText("Введите корректные данные для регистрации");
+                log.warn("Введены неккорректные данные для регистрации, login - {}, password - {}", loginStr, passwordStr);
             } else {
-                UsersEntity user = new UsersEntity(loginStr, hashPassword);
-                UsersDao.getInstance().insert(user);
-                info.setText("Пользователь добавлен!");
+                String hashPassword = DigestUtils.md5Hex(passwordStr);
+                if (UsersDao.getInstance().selectLogin(loginStr)) {
+                    info.setText("Пользователь с таким логином уже существует");
+                    log.warn("Пользователь уже существует, login - {}", loginStr);
+                } else {
+                    UsersEntity user = new UsersEntity(loginStr, hashPassword);
+                    UsersDao.getInstance().insert(user);
+                    info.setText("Пользователь добавлен!");
+                    log.info("Добавлен новый пользователь - {}", user.toString());
+                }
             }
+        } catch (Exception e) {
+            String errorMessage = ExceptionHandler.getMessage(e);
+            info.setText(errorMessage);
+            log.error(errorMessage);
         }
     }
 

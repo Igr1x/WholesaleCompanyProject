@@ -26,7 +26,7 @@ public class TopGoodsDao {
         return INSTATNCE;
     }
 
-    public ObservableList select() {
+    public ObservableList select() throws SQLException {
         ObservableList<TopGoodsEntity> goodList = FXCollections.observableArrayList();
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(SELECT_SQL)) {

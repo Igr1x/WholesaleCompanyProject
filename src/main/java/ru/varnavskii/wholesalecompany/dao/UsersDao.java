@@ -18,7 +18,7 @@ public class UsersDao {
         return INSTANCE;
     }
 
-    public boolean select(String login, String password) {
+    public boolean select(String login, String password) throws SQLException {
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(SELECT_SQL)) {
             statement.setString(1, login);
@@ -33,7 +33,7 @@ public class UsersDao {
         }
     }
 
-    public boolean selectLogin(String login) {
+    public boolean selectLogin(String login) throws SQLException {
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(SELECT_LOGIN_SQL)) {
             statement.setString(1, login);
@@ -47,7 +47,7 @@ public class UsersDao {
         }
     }
 
-    public UsersEntity insert(UsersEntity user) {
+    public UsersEntity insert(UsersEntity user) throws SQLException {
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(INSERT_SQL)) {
             statement.setString(1, user.getLogin());

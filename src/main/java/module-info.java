@@ -6,6 +6,8 @@ module ru.varnavskii.wholesalecompany {
     requires lombok;
     requires fastexcel;
     requires org.apache.commons.codec;
+    requires org.postgresql.jdbc;
+    requires org.slf4j;
 
     opens ru.varnavskii.wholesalecompany to javafx.fxml;
     exports ru.varnavskii.wholesalecompany;

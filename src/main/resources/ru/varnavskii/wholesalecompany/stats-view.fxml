@@ -11,7 +11,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.varnavskii.wholesalecompany.controller.StatsController">
    <children>
-      <Button fx:id="menuButton" layoutX="534.0" layoutY="350.0" mnemonicParsing="false" onAction="#goMenu" text="Menu" />
+      <Button fx:id="menuButton" layoutX="534.0" layoutY="350.0" mnemonicParsing="false" onAction="#goMenu" text="Меню" />
       <TextField editable="false" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="182.0" text="5 самых популярных товаров" />
       <TableView fx:id="topGoods" layoutX="14.0" layoutY="45.0" prefHeight="200.0" prefWidth="182.0">
         <columns>
@@ -21,7 +21,7 @@
       </TableView>
       <TextField fx:id="goodIdTextField" layoutX="14.0" layoutY="289.0" promptText="good_id" />
       <Button fx:id="demandButton" layoutX="14.0" layoutY="264.0" mnemonicParsing="false" onAction="#checkDemand" text="Узнать спрос" />
-      <TextField fx:id="resultTextField" layoutX="14.0" layoutY="363.0" prefHeight="25.0" prefWidth="314.0" />
+      <TextField fx:id="resultTextField" editable="false" layoutX="14.0" layoutY="363.0" prefHeight="25.0" prefWidth="314.0" />
       <TextField fx:id="startDate" layoutX="14.0" layoutY="326.0" promptText="Начальная дата" />
       <TextField fx:id="endDate" layoutX="179.0" layoutY="326.0" prefHeight="25.0" prefWidth="155.0" promptText="Конечная дата" />
       <LineChart fx:id="lineChart" layoutX="206.0" layoutY="45.0" prefHeight="267.0" prefWidth="383.0">

@@ -22,7 +22,7 @@ public class GoodsDao {
         return INSTANCE;
     }
 
-    public boolean delete(Integer id) {
+    public boolean delete(Integer id) throws SQLException {
         try (Connection connection = ConnectionManager.get();
             var statement = connection.prepareStatement(DELETE_SQL)) {
             statement.setInt(1, id);
@@ -32,7 +32,7 @@ public class GoodsDao {
         }
     }
 
-    public GoodsEntity insert (GoodsEntity good) {
+    public GoodsEntity insert (GoodsEntity good) throws SQLException {
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(INSERT_SQL)) {
             statement.setInt(1, good.getId());
@@ -45,7 +45,7 @@ public class GoodsDao {
         }
     }
 
-    public void update(String newName, Integer newPriority, Integer id) {
+    public void update(String newName, Integer newPriority, Integer id) throws SQLException {
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(UPDATE_SQL)) {
             statement.setString(1, newName);
@@ -57,7 +57,7 @@ public class GoodsDao {
         }
     }
 
-    public ObservableList select() {
+    public ObservableList select() throws SQLException {
         ObservableList<GoodsEntity> goodsList = FXCollections.observableArrayList();
         try (Connection connection = ConnectionManager.get();
             var statement = connection.prepareStatement(SELECT_SQL)) {

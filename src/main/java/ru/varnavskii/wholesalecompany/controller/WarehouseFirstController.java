@@ -10,18 +10,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import ru.varnavskii.wholesalecompany.dao.SalesDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.varnavskii.wholesalecompany.dao.WarehouseFirstDao;
-import ru.varnavskii.wholesalecompany.entity.SalesEntity;
 import ru.varnavskii.wholesalecompany.entity.WarehouseFirstEntity;
+import ru.varnavskii.wholesalecompany.util.ExceptionHandler;
 
 public class WarehouseFirstController {
+
+    private final static Logger log = LoggerFactory.getLogger(WarehouseFirstController.class);
 
     @FXML
     private ResourceBundle resources;
@@ -63,24 +63,50 @@ public class WarehouseFirstController {
     private Button updateButton;
 
     @FXML
+    private TextArea infoText;
+
+    @FXML
     void addGood(ActionEvent event) {
-        WarehouseFirstEntity good = new WarehouseFirstEntity(Integer.parseInt(idTextField.getText()),
-                                                            Integer.parseInt(goodIdTextField.getText()),
-                                                            Integer.parseInt(goodCountTextField.getText()));
-        WarehouseFirstDao.getInstance().insert(good);
-        initialize();
+        try {
+            WarehouseFirstEntity good = new WarehouseFirstEntity(Integer.parseInt(idTextField.getText()),
+                    Integer.parseInt(goodIdTextField.getText()),
+                    Integer.parseInt(goodCountTextField.getText()));
+            WarehouseFirstDao.getInstance().insert(good);
+            initialize();
+            log.info("Добавлен новый товар на склад 1: {}", good.toString());
+        } catch (Exception e) {
+            String errorMessage = ExceptionHandler.getMessage(e);
+            infoText.setText(errorMessage);
+            log.error(errorMessage);
+        }
     }
 
     @FXML
     void deleteGood(ActionEvent event) {
-        WarehouseFirstDao.getInstance().delete(Integer.parseInt(idTextField.getText()));
-        initialize();
+        try {
+            Integer id = Integer.parseInt(idTextField.getText());
+            WarehouseFirstDao.getInstance().delete(id);
+            initialize();
+            log.info("Удален товар со склада 1, id - {}", id);
+        } catch (Exception e) {
+            String errorMessage = ExceptionHandler.getMessage(e);
+            infoText.setText(errorMessage);
+            log.error(errorMessage);
+        }
     }
 
     @FXML
     void updateGood(ActionEvent event) {
-        WarehouseFirstDao.getInstance().update(Integer.parseInt(goodCountTextField.getText()), Integer.parseInt(idTextField.getText()));
-        initialize();
+        try {
+            Integer id = Integer.parseInt(idTextField.getText());
+            WarehouseFirstDao.getInstance().update(Integer.parseInt(goodCountTextField.getText()), id);
+            initialize();
+            log.info("Со скалад 1 удалён товар, id - {}", id);
+        } catch (Exception e) {
+            String errorMessage = ExceptionHandler.getMessage(e);
+            infoText.setText(errorMessage);
+            log.error(errorMessage);
+        }
     }
 
     @FXML
@@ -105,8 +131,15 @@ public class WarehouseFirstController {
         columnGoodCount.setCellValueFactory(new PropertyValueFactory<WarehouseFirstEntity, Integer>("goodCount"));
         columnGoodId.setCellValueFactory(new PropertyValueFactory<WarehouseFirstEntity, Integer>("goodId"));
 
-        ObservableList<WarehouseFirstEntity> list = WarehouseFirstDao.getInstance().select();
-        tableWarehouse.setItems(list);
+        try {
+            ObservableList<WarehouseFirstEntity> list = WarehouseFirstDao.getInstance().select();
+            tableWarehouse.setItems(list);
+            log.info("SELECT запрос, таблица - warehouse1");
+        } catch (Exception e) {
+            String errorMessage = ExceptionHandler.getMessage(e);
+            infoText.setText(errorMessage);
+            log.error(errorMessage);
+        }
     }
 
 }

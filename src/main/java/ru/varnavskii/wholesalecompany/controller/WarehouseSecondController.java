@@ -2,6 +2,7 @@ package ru.varnavskii.wholesalecompany.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 import javafx.collections.ObservableList;
@@ -10,17 +11,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import ru.varnavskii.wholesalecompany.dao.WarehouseFirstDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.varnavskii.wholesalecompany.dao.WarehouseSecondDao;
 import ru.varnavskii.wholesalecompany.entity.WarehouseSecondEntity;
+import ru.varnavskii.wholesalecompany.util.ExceptionHandler;
 
 public class WarehouseSecondController {
+
+    private final static Logger log = LoggerFactory.getLogger(WarehouseSecondController.class);
 
     @FXML
     private ResourceBundle resources;
@@ -62,24 +64,50 @@ public class WarehouseSecondController {
     private Button updateButton;
 
     @FXML
+    private TextArea infoText;
+
+    @FXML
     void addGood(ActionEvent event) {
-        WarehouseSecondEntity good = new WarehouseSecondEntity(Integer.parseInt(idTextField.getText()),
-                                                               Integer.parseInt(goodIdTextField.getText()),
-                                                                Integer.parseInt(goodCountTextField.getText()));
-        WarehouseSecondDao.getInstance().insert(good);
-        initialize();
+        try {
+            WarehouseSecondEntity good = new WarehouseSecondEntity(Integer.parseInt(idTextField.getText()),
+                    Integer.parseInt(goodIdTextField.getText()),
+                    Integer.parseInt(goodCountTextField.getText()));
+            WarehouseSecondDao.getInstance().insert(good);
+            initialize();
+            log.info("Добавлен новый товар на склад 2: {}", good.toString());
+        } catch (SQLException e) {
+            String errorMessage = ExceptionHandler.getMessage(e);
+            infoText.setText(errorMessage);
+            log.error(errorMessage);
+        }
     }
 
     @FXML
     void deleteGood(ActionEvent event) {
-        WarehouseSecondDao.getInstance().delete(Integer.parseInt(idTextField.getText()));
-        initialize();
+        try {
+            Integer id = Integer.parseInt(idTextField.getText());
+            WarehouseSecondDao.getInstance().delete(id);
+            initialize();
+            log.info("Удален товар со склада 1, id - {}", id);
+        } catch (Exception e) {
+            String errorMessage = ExceptionHandler.getMessage(e);
+            infoText.setText(errorMessage);
+            log.error(errorMessage);
+        }
     }
 
     @FXML
     void updateGood(ActionEvent event) {
-        WarehouseSecondDao.getInstance().update(Integer.parseInt(goodCountTextField.getText()), Integer.parseInt(idTextField.getText()));
-        initialize();
+        try {
+            Integer id = Integer.parseInt(idTextField.getText());
+            WarehouseSecondDao.getInstance().update(Integer.parseInt(goodCountTextField.getText()), id);
+            initialize();
+            log.info("Со скалад 1 удалён товар, id - {}", id);
+        } catch (Exception e) {
+            String errorMessage = ExceptionHandler.getMessage(e);
+            infoText.setText(errorMessage);
+            log.error(errorMessage);
+        }
     }
 
     @FXML
@@ -104,9 +132,15 @@ public class WarehouseSecondController {
         columnId.setCellValueFactory(new PropertyValueFactory<WarehouseSecondEntity, Integer>("id"));
         columnGoodCount.setCellValueFactory(new PropertyValueFactory<WarehouseSecondEntity, Integer>("goodCount"));
         columnGoodId.setCellValueFactory(new PropertyValueFactory<WarehouseSecondEntity, Integer>("goodId"));
-
-        ObservableList<WarehouseSecondEntity> list = WarehouseSecondDao.getInstance().select();
-        tableWarehouse.setItems(list);
+        try {
+            ObservableList<WarehouseSecondEntity> list = WarehouseSecondDao.getInstance().select();
+            tableWarehouse.setItems(list);
+            log.info("SELECT запрос, таблица - warehouse2");
+        } catch (Exception e) {
+            String errorMessage = ExceptionHandler.getMessage(e);
+            infoText.setText(errorMessage);
+            log.error(errorMessage);
+        }
     }
 
 }

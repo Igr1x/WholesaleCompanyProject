@@ -22,7 +22,7 @@ public class WarehouseSecondDao {
         return INSTANCE;
     }
 
-    public boolean delete(Integer id) {
+    public boolean delete(Integer id) throws SQLException {
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(DELETE_SQL)) {
             statement.setInt(1, id);
@@ -32,7 +32,7 @@ public class WarehouseSecondDao {
         }
     }
 
-    public WarehouseSecondEntity insert (WarehouseSecondEntity warehouse) {
+    public WarehouseSecondEntity insert (WarehouseSecondEntity warehouse) throws SQLException {
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(INSERT_SQL)) {
             statement.setInt(1, warehouse.getId());
@@ -46,7 +46,7 @@ public class WarehouseSecondDao {
         }
     }
 
-    public void update(Integer newGoodCount, Integer id) {
+    public void update(Integer newGoodCount, Integer id) throws SQLException {
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(UPDATE_SQL)) {
             statement.setInt(1, newGoodCount);
@@ -57,7 +57,7 @@ public class WarehouseSecondDao {
         }
     }
 
-    public ObservableList select() {
+    public ObservableList select() throws SQLException {
         ObservableList<WarehouseSecondEntity> warehouseList = FXCollections.observableArrayList();
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(SELECT_SQL)) {

@@ -9,9 +9,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MenuController {
+
+    private static final Logger log = LoggerFactory.getLogger(MenuController.class);
 
     @FXML
     private ResourceBundle resources;
@@ -30,6 +35,9 @@ public class MenuController {
 
     @FXML
     private Button statsButton;
+
+    @FXML
+    private TextArea userInfo;
 
     @FXML
     private Button warehouseFirstButton;
@@ -67,6 +75,7 @@ public class MenuController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        log.info("Выход с аккаунта, login - {}", LoginController.getUser());
     }
 
     @FXML
@@ -135,6 +144,6 @@ public class MenuController {
 
     @FXML
     void initialize() {
+        userInfo.setText("Пользователь: " + LoginController.getUser());
     }
-
 }

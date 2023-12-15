@@ -2,10 +2,12 @@ package ru.varnavskii.wholesalecompany.dao;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.postgresql.util.PSQLException;
 import ru.varnavskii.wholesalecompany.entity.GoodsEntity;
 import ru.varnavskii.wholesalecompany.entity.SalesEntity;
 import ru.varnavskii.wholesalecompany.util.ConnectionManager;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,14 +35,13 @@ public class SalesDao {
             ORDER BY create_date;
             """;
 
-    private SalesDao() {
-    };
+    private SalesDao() {};
 
     public static SalesDao getInstance() {
         return INSTANCE;
     }
 
-    public boolean delete(Integer id) {
+    public boolean delete(Integer id) throws SQLException {
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(DELETE_SQL)) {
             statement.setInt(1, id);
@@ -50,7 +51,7 @@ public class SalesDao {
         }
     }
 
-    public SalesEntity insert(SalesEntity sale) {
+    public SalesEntity insert(SalesEntity sale) throws SQLException {
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(INSERT_SQL)) {
             statement.setInt(1, sale.getId());
@@ -64,7 +65,7 @@ public class SalesDao {
         }
     }
 
-    public void update(Integer newGoodCount, Integer id) {
+    public void update(Integer newGoodCount, Integer id) throws SQLException {
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(UPDATE_SQL)) {
             statement.setInt(1, newGoodCount);
@@ -75,7 +76,7 @@ public class SalesDao {
         }
     }
 
-    public ObservableList select() {
+    public ObservableList select() throws SQLException {
         ObservableList<SalesEntity> salesList = FXCollections.observableArrayList();
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(SELECT_SQL)) {
@@ -90,9 +91,9 @@ public class SalesDao {
         }
     }
 
-    public List<Integer> selectDemain(Integer id, Timestamp startDate, Timestamp endDate) {
-        try(Connection connection = ConnectionManager.get();
-            var statement = connection.prepareStatement(SELECT_DEMAIN_SQL)) {
+    public List<Integer> selectDemain(Integer id, Timestamp startDate, Timestamp endDate) throws SQLException {
+        try (Connection connection = ConnectionManager.get();
+             var statement = connection.prepareStatement(SELECT_DEMAIN_SQL)) {
             statement.setInt(1, id);
             statement.setTimestamp(2, startDate);
             statement.setTimestamp(3, endDate);
@@ -107,13 +108,13 @@ public class SalesDao {
         }
     }
 
-    public Map<String, Integer> selectDemain(Integer id) {
-        try(Connection connection = ConnectionManager.get();
-            var statement = connection.prepareStatement(SELECT_DEMAIN_CHART_SQL)) {
+    public Map<String, Integer> selectDemain(Integer id) throws SQLException {
+        try (Connection connection = ConnectionManager.get();
+             var statement = connection.prepareStatement(SELECT_DEMAIN_CHART_SQL)) {
             statement.setInt(1, id);
             Map<String, Integer> map = new LinkedHashMap<>();
             ResultSet result = statement.executeQuery();
-            while(result.next()) {
+            while (result.next()) {
                 map.put(result.getString("formated_date"), result.getInt("good_count"));
             }
             return map;
@@ -121,6 +122,4 @@ public class SalesDao {
             throw new RuntimeException(e);
         }
     }
-
-
 }
