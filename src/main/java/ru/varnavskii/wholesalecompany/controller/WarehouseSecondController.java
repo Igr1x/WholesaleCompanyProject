@@ -1,6 +1,5 @@
 package ru.varnavskii.wholesalecompany.controller;
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -8,17 +7,16 @@ import java.util.ResourceBundle;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.varnavskii.wholesalecompany.Exception.TriggerException;
+import ru.varnavskii.wholesalecompany.dao.WarehouseFirstDao;
 import ru.varnavskii.wholesalecompany.dao.WarehouseSecondDao;
 import ru.varnavskii.wholesalecompany.entity.WarehouseSecondEntity;
-import ru.varnavskii.wholesalecompany.util.ExceptionHandler;
+import ru.varnavskii.wholesalecompany.util.ControllerUtil;
+import ru.varnavskii.wholesalecompany.util.ScenesPaths;
 
 public class WarehouseSecondController {
 
@@ -75,10 +73,11 @@ public class WarehouseSecondController {
             WarehouseSecondDao.getInstance().insert(good);
             initialize();
             log.info("Добавлен новый товар на склад 2: {}", good.toString());
-        } catch (SQLException e) {
-            String errorMessage = ExceptionHandler.getMessage(e);
-            infoText.setText(errorMessage);
-            log.error(errorMessage);
+        } catch (NumberFormatException e) {
+            log.warn(ControllerUtil.INCORRECT_DATA);
+            infoText.setText(ControllerUtil.INCORRECT_DATA);
+        } finally {
+            clear();
         }
     }
 
@@ -89,10 +88,11 @@ public class WarehouseSecondController {
             WarehouseSecondDao.getInstance().delete(id);
             initialize();
             log.info("Удален товар со склада 1, id - {}", id);
-        } catch (Exception e) {
-            String errorMessage = ExceptionHandler.getMessage(e);
-            infoText.setText(errorMessage);
-            log.error(errorMessage);
+        } catch (NumberFormatException e) {
+            log.warn(ControllerUtil.INCORRECT_DATA);
+            infoText.setText(ControllerUtil.INCORRECT_DATA);
+        } finally {
+            clear();
         }
     }
 
@@ -103,44 +103,42 @@ public class WarehouseSecondController {
             WarehouseSecondDao.getInstance().update(Integer.parseInt(goodCountTextField.getText()), id);
             initialize();
             log.info("Со скалад 1 удалён товар, id - {}", id);
-        } catch (Exception e) {
-            String errorMessage = ExceptionHandler.getMessage(e);
-            infoText.setText(errorMessage);
-            log.error(errorMessage);
+        } catch (TriggerException e) {
+            infoText.setText(e.getMessage());
+            log.warn(e.getMessage());
+        } catch (NumberFormatException e) {
+            log.warn(ControllerUtil.INCORRECT_DATA);
+            infoText.setText(ControllerUtil.INCORRECT_DATA);
+        } finally {
+            clear();
         }
     }
 
     @FXML
     void goMenu(ActionEvent event) {
-        menuButton.getScene().getWindow().hide();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/menu-view.fxml"));
-        try {
-            loader.load();
-            Parent root = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ControllerUtil.openScene(menuButton, ScenesPaths.MENU_PATH);
     }
-
 
     @FXML
     void initialize() {
+        clear();
+        initializeWarehouseTable();
+    }
+
+    private void clear() {
+        idTextField.clear();
+        goodCountTextField.clear();
+        goodIdTextField.clear();
+    }
+
+    private void initializeWarehouseTable() {
         columnId.setCellValueFactory(new PropertyValueFactory<WarehouseSecondEntity, Integer>("id"));
         columnGoodCount.setCellValueFactory(new PropertyValueFactory<WarehouseSecondEntity, Integer>("goodCount"));
         columnGoodId.setCellValueFactory(new PropertyValueFactory<WarehouseSecondEntity, Integer>("goodId"));
-        try {
-            ObservableList<WarehouseSecondEntity> list = WarehouseSecondDao.getInstance().select();
-            tableWarehouse.setItems(list);
-            log.info("SELECT запрос, таблица - warehouse2");
-        } catch (Exception e) {
-            String errorMessage = ExceptionHandler.getMessage(e);
-            infoText.setText(errorMessage);
-            log.error(errorMessage);
-        }
-    }
 
+        ObservableList<WarehouseSecondEntity> list = WarehouseFirstDao.getInstance().select();
+
+        tableWarehouse.setItems(list);
+        log.info("SELECT запрос, таблица - warehouse2");
+    }
 }

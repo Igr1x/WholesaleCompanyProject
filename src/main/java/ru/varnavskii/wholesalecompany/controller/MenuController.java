@@ -1,18 +1,15 @@
 package ru.varnavskii.wholesalecompany.controller;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.varnavskii.wholesalecompany.util.ControllerUtil;
+import ru.varnavskii.wholesalecompany.util.ScenesPaths;
 
 public class MenuController {
 
@@ -47,99 +44,33 @@ public class MenuController {
 
     @FXML
     void goGoods(ActionEvent event) {
-        goodsButton.getScene().getWindow().hide();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/goods-view.fxml"));
-        try {
-            loader.load();
-            Parent root = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ControllerUtil.openScene(goodsButton, ScenesPaths.GOODS_PATH);
     }
 
     @FXML
     void goLogin(ActionEvent event) {
-        logoutButton.getScene().getWindow().hide();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/login.fxml"));
-        try {
-            loader.load();
-            Parent root = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ControllerUtil.openScene(logoutButton, ScenesPaths.LOGIN_PATH);
         log.info("Выход с аккаунта, login - {}", LoginController.getUser());
     }
 
     @FXML
     void goSales(ActionEvent event) {
-        salesButton.getScene().getWindow().hide();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/sales-view.fxml"));
-        try {
-            loader.load();
-            Parent root = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ControllerUtil.openScene(salesButton, ScenesPaths.SALES_PATH);
     }
 
     @FXML
     void goStats(ActionEvent event) {
-        statsButton.getScene().getWindow().hide();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/stats-view.fxml"));
-        try {
-            loader.load();
-            Parent root = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ControllerUtil.openScene(statsButton, ScenesPaths.STATS_PATH);
     }
 
     @FXML
     void goWarehouseFirst(ActionEvent event) {
-        warehouseFirstButton.getScene().getWindow().hide();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/warehouse1-view.fxml"));
-        try {
-            loader.load();
-            Parent root = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ControllerUtil.openScene(warehouseFirstButton, ScenesPaths.WAREHOUSE_FIRST_PATH);
     }
 
     @FXML
     void goWarehouseSecond(ActionEvent event) {
-        warehouseSecondButton.getScene().getWindow().hide();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/warehouse2-view.fxml"));
-        try {
-            loader.load();
-            Parent root = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ControllerUtil.openScene(warehouseSecondButton, ScenesPaths.WAREHOUSE_SECOND_PATH);
     }
 
     @FXML

@@ -4,7 +4,7 @@ public final class ExceptionHandler {
     private ExceptionHandler() {};
 
     public static String getMessage(Exception e) {
-        String errorMessage = e.getCause().getMessage();
+        String errorMessage = e.getMessage();
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("ОШИБКА: (.+)");
         java.util.regex.Matcher matcher = pattern.matcher(errorMessage);
 

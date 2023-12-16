@@ -19,6 +19,8 @@ public class SalesEntity {
         this.goodId = goodId;
     }
 
+    public SalesEntity(){};
+
     @Override
     public String toString() {
         return "SalesEntity{" +

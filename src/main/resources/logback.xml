@@ -3,6 +3,8 @@
     <appender name="FILE"
               class="ch.qos.logback.core.FileAppender">
         <file>logs.log</file>
+        <maxHistory>10</maxHistory>
+        <totalSizeCap>10GB</totalSizeCap>
         <encoder>
             <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %-5level  %logger{20} - %msg%n</pattern>
         </encoder>

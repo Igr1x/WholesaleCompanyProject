@@ -1,5 +1,8 @@
 package ru.varnavskii.wholesalecompany.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Proxy;
 import java.sql.DriverManager;
 import java.sql.Connection;
@@ -18,6 +21,8 @@ public final class ConnectionManager {
     private static BlockingQueue<Connection> pool;
     private static List<Connection> sourceConnections;
 
+    private final static Logger log = LoggerFactory.getLogger(ConnectionManager.class);
+
     private ConnectionManager() {};
 
     static {
@@ -30,6 +35,7 @@ public final class ConnectionManager {
                     PropertiesUtil.getProperties(USERNAME_KEY),
                     PropertiesUtil.getProperties(PASSWORD_KEY));
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -55,6 +61,7 @@ public final class ConnectionManager {
         try {
             return pool.take();
         } catch (InterruptedException e) {
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -64,6 +71,7 @@ public final class ConnectionManager {
             try {
                 sourceConnection.close();
             } catch (SQLException e) {
+                log.error(e.getMessage());
                 throw new RuntimeException(e);
             }
         }

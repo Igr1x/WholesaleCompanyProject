@@ -2,6 +2,8 @@ package ru.varnavskii.wholesalecompany.dao;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.varnavskii.wholesalecompany.entity.TopGoodsEntity;
 import ru.varnavskii.wholesalecompany.util.ConnectionManager;
 
@@ -11,6 +13,9 @@ import java.sql.SQLException;
 
 public class TopGoodsDao {
     private static final TopGoodsDao INSTATNCE = new TopGoodsDao();
+
+    private final Logger log = LoggerFactory.getLogger(TopGoodsDao.class);
+
     private static final String SELECT_SQL = """
             SELECT goods.name, SUM(good_count) AS good_count
             FROM sales
@@ -26,7 +31,7 @@ public class TopGoodsDao {
         return INSTATNCE;
     }
 
-    public ObservableList select() throws SQLException {
+    public ObservableList<TopGoodsEntity> select() {
         ObservableList<TopGoodsEntity> goodList = FXCollections.observableArrayList();
         try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(SELECT_SQL)) {
@@ -36,6 +41,7 @@ public class TopGoodsDao {
             }
             return goodList;
         } catch (SQLException e) {
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }

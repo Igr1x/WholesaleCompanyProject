@@ -2,28 +2,28 @@ package ru.varnavskii.wholesalecompany.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.varnavskii.wholesalecompany.dao.UsersDao;
 import ru.varnavskii.wholesalecompany.entity.UsersEntity;
-import ru.varnavskii.wholesalecompany.util.ExceptionHandler;
+import ru.varnavskii.wholesalecompany.util.ControllerUtil;
+import ru.varnavskii.wholesalecompany.util.ScenesPaths;
 
 public class LoginController {
 
     private static final Logger log = LoggerFactory.getLogger(LoginController.class);
+
+    private final String USER_NOT_EXIST = "Пользователь не найден!";
 
     @FXML
     private ResourceBundle resources;
@@ -50,53 +50,28 @@ public class LoginController {
 
     @FXML
     void goMenu(ActionEvent event) {
-        String password = passwordTextField.getText();
-        String passwordHash = DigestUtils.md5Hex(password);
         String login = loginTextField.getText();
-        UsersEntity user = new UsersEntity(login, passwordHash);
-
+        String password = passwordTextField.getText();
         try {
+            ControllerUtil.checkUserData(login, password);
+            String passwordHash = DigestUtils.md5Hex(password);
+            UsersEntity user = new UsersEntity(login, passwordHash);
             boolean res = UsersDao.getInstance().select(user.getLogin(), user.getPassword());
-            if (res) {
-                userLogin = login;
-                loginButton.getScene().getWindow().hide();
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource("/menu-view.fxml"));
-                try {
-                    loader.load();
-                    Parent root = loader.getRoot();
-                    Stage stage = new Stage();
-                    stage.setScene(new Scene(root));
-                    stage.show();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                log.info("Выполнен вход, login - {}", login);
-            } else {
-                info.setText("Пользователь не найден!");
-                log.info("Пользователь не найден, login - {}", login);
+            if (!res) {
+                throw new IOException(USER_NOT_EXIST);
             }
-        } catch (Exception e) {
-            String errorMessage = ExceptionHandler.getMessage(e);
-            info.setText(errorMessage);
-            log.error(errorMessage);
+            userLogin = login;
+            ControllerUtil.openScene(loginButton, ScenesPaths.MENU_PATH);
+            log.info("Выполнен вход, login - {}", login);
+        } catch (IOException e) {
+            log.warn(e.getMessage() + " login - {}", login);
+            info.setText(e.getMessage());
         }
     }
 
     @FXML
     void goRegister(ActionEvent event) {
-        registerButton.getScene().getWindow().hide();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/hello-view.fxml"));
-        try {
-            loader.load();
-            Parent root = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ControllerUtil.openScene(registerButton, ScenesPaths.REGISTRATION_PATH);
     }
 
     @FXML

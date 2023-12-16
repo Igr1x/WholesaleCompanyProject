@@ -1,9 +1,7 @@
 package ru.varnavskii.wholesalecompany.controller;
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -11,9 +9,6 @@ import java.util.ResourceBundle;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
@@ -21,13 +16,17 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.varnavskii.wholesalecompany.dao.SalesDao;
 import ru.varnavskii.wholesalecompany.dao.TopGoodsDao;
 import ru.varnavskii.wholesalecompany.entity.TopGoodsEntity;
-import ru.varnavskii.wholesalecompany.util.ExceptionHandler;
+import ru.varnavskii.wholesalecompany.util.ControllerUtil;
+import ru.varnavskii.wholesalecompany.util.ScenesPaths;
 
 public class StatsController {
+
+    private final Logger log = LoggerFactory.getLogger(StatsController.class);
 
     @FXML
     private ResourceBundle resources;
@@ -80,67 +79,62 @@ public class StatsController {
         Timestamp end = Timestamp.valueOf(endDateFormated);
         try {
             List<Integer> result = SalesDao.getInstance().selectDemain(id, start, end);
-            int resultDemain = 0;
-            for (int i = 0; i < result.size(); i++) {
-                if (resultDemain > result.get(i)) {
-                    resultDemain -= result.get(i);
-                } else {
-                    resultDemain += result.get(i);
-                }
-            }
-            if (resultDemain < 0) {
-                resultTextField.setText("Спрос упал на: " + resultDemain / -1);
-            } else {
-                resultTextField.setText("Спрос увеличился на: " + resultDemain);
-            }
-        } catch (Exception e) {
-            String errorMessage = ExceptionHandler.getMessage(e);
-            System.out.println(errorMessage);
+            calcDemandChanges(result, id);
+        } catch (NumberFormatException e) {
+            log.warn(ControllerUtil.INCORRECT_DATA);
+        } finally {
+            startDate.clear();
+            endDate.clear();
+            goodIdTextField.clear();
         }
     }
 
     @FXML
     void checkDemandChart(ActionEvent event) {
         lineChart.getData().clear();
-        lineChart.getXAxis().setAutoRanging(true);
-        Integer id = Integer.parseInt(goodIdChartTextField.getText());
         try {
-            Map<String, Integer> map = SalesDao.getInstance().selectDemain(id);
+            Integer id = Integer.parseInt(goodIdChartTextField.getText());
+            Map<String, Integer> map = SalesDao.getInstance().selectMapDemain(id);
             XYChart.Series series = new XYChart.Series();
             for (Map.Entry<String, Integer> entry : map.entrySet()) {
                 series.getData().add(new XYChart.Data(entry.getKey(), entry.getValue()));
             }
             lineChart.getData().add(series);
-        } catch (Exception e) {
-            String errorMessage = ExceptionHandler.getMessage(e);
-            System.out.println(errorMessage);
+        } catch (NumberFormatException e) {
+            log.warn(ControllerUtil.INCORRECT_DATA);
+        } finally {
+            goodIdChartTextField.clear();
         }
     }
 
     @FXML
     void goMenu(ActionEvent event) {
-        menuButton.getScene().getWindow().hide();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/menu-view.fxml"));
-        try {
-            loader.load();
-            Parent root = loader.getRoot();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ControllerUtil.openScene(menuButton, ScenesPaths.MENU_PATH);
     }
 
     @FXML
     void initialize() {
+        initializeTableOfGoods();
+    }
+
+    private void initializeTableOfGoods() {
         good_name.setCellValueFactory(new PropertyValueFactory<TopGoodsEntity, String>("name"));
         good_count.setCellValueFactory(new PropertyValueFactory<TopGoodsEntity, Integer>("goodCount"));
-        try {
-            ObservableList<TopGoodsEntity> list = TopGoodsDao.getInstance().select();
-            topGoods.setItems(list);
-        } catch (Exception e) {
+        ObservableList<TopGoodsEntity> list = TopGoodsDao.getInstance().select();
+        topGoods.setItems(list);
+    }
+
+    private StringBuilder calcDemandChanges(List<Integer> demandList, int goodId) {
+        int resultDemain = 0;
+        for (int i = 0; i < demandList.size(); i++) {
+            resultDemain = (resultDemain > demandList.get(i)) ? (resultDemain - demandList.get(i)) : (resultDemain + demandList.get(i));
         }
+        if (resultDemain < 0) {
+            return new StringBuilder("Спрос на товар " + goodId + " упал на: " + resultDemain / -1);
+        }
+        if (resultDemain == 0) {
+            return new StringBuilder("Спрос на товар " + goodId + " не изменился");
+        }
+        return new StringBuilder("Спрос на товар " + goodId + " увеличился на: " + resultDemain);
     }
 }
